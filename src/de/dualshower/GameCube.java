@@ -32,7 +32,7 @@ public class GameCube {
     public PIECE getPiece(int column, int row, int height)
     {
         return pieces[column][row][height];
-	}
+    }
 
     public GameCube clone() {
         GameCube clone = new GameCube();

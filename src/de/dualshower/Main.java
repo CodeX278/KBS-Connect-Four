@@ -208,16 +208,112 @@ public class Main {
             }
             
             //Also check diagonals
-            if(column == row && row == height)
+            for(int i = 0; i<4; i++)
             {
-               //TODO math
+                tmpScore = checkObstructionDiagonal(sliceA(gc, row), column, height);
+                  if(tmpScore == 0 || tmpScore == 1)
+                {
+                    score += tmpScore;
+                }
+                else
+                {
+                    //Win or loss
+                    return tmpScore;
+                }
             }
         }
         
         return score;
     }
     
-    public int checkObstruction(GameCube gc, int variableDimension,int column, int row, int height, PIECE player)
+    public int checkObstructionDiagonal(PIECE[][] slice, int column, int row)
+    {
+        PIECE playerPiece = slice[column][row];
+        int hit = 0, notObstructed = 0;
+        
+        //Left bottom to right top
+        if(column == row)
+        {
+            for(int i = 0; i < 3; i++)
+            {
+                if(slice[i][i] == playerPiece) {
+                    hit++;
+                    notObstructed++;
+                }
+                else if(slice[i][i] == PIECE.EMPTY)
+                {
+                   notObstructed++;
+                }
+                else
+                {
+                    hit--;
+                }
+            }
+        }
+        else
+        {
+            if(column + row == 3)
+            {
+                for(int i = 0, k = 3; i < 3 && k>1; i++, k--)
+                {
+                    if(slice[i][k] == playerPiece) {
+                        hit++;
+                        notObstructed++;
+                    }
+                    else if(slice[i][k] == PIECE.EMPTY)
+                    {
+                       notObstructed++;
+                    }
+                    else
+                    {
+                        hit--;
+                    }
+                }
+
+
+            }
+        }
+        
+        if(hit == 4)    return PLUS_INFINITY;
+        if(hit == -4)   return MINUS_INFINITY;
+        if(notObstructed == 4) return 1;
+        return 0;
+    }
+    
+    public PIECE[][] sliceA(GameCube gc, int sliceDim)
+    {
+        PIECE[][] slice = new PIECE[4][4];
+        for(int column = 0; column < 4; column++)
+            for(int height = 0; height < 4; height++)
+            {
+                slice[column][height] = gc.getPiece(sliceDim, column, height);
+            }
+        return slice;
+    }
+    
+    public PIECE[][] sliceB(GameCube gc, int sliceDim)
+    {
+        PIECE[][] slice = new PIECE[4][4];
+        for(int row = 0; row < 4; row++)
+            for(int height = 0; height < 4; height++)
+            {
+                slice[row][height] = gc.getPiece(row, sliceDim, height);
+            }
+        return slice;
+    }
+    
+    public PIECE[][] sliceC(GameCube gc, int sliceDim)
+    {
+        PIECE[][] slice = new PIECE[4][4];
+        for(int row = 0; row < 4; row++)
+            for(int column = 0; column < 4; column++)
+            {
+                slice[column][row] = gc.getPiece(row, column, sliceDim);
+            }
+        return slice;
+    }
+    
+    public int checkObstruction(GameCube gc, int variableDimension, int column, int row, int height, PIECE player)
     {
         int     i = 0, hit = 0, notObstructed = 0;
         PIECE   checkPiece = PIECE.EMPTY;
@@ -240,7 +336,8 @@ public class Main {
                 
                 if(checkPiece == player)
                 { 
-                    hit++;          
+                    hit++;
+                    notObstructed++;
                 }
                 else if (checkPiece == PIECE.EMPTY)
                 {
