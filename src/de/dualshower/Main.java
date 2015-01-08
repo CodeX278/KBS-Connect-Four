@@ -7,13 +7,14 @@ public class Main {
 
     public static final int MAX_DEPTH = 3;
 
-    public enum PIECE {EMPTY, PLAYER_1, PLAYER_2};
+    public enum PIECE {EMPTY, PLAYER_1, PLAYER_2}
 
     public static void main(String[] args) {
         GameCube initialState = new GameCube();
         PIECE player = PIECE.PLAYER_1; //set according to arguments
 
         //parse arguments, initialize GameCube
+        inititalizeCube(initialState,"");
 
         TreeNode root = new TreeNode(initialState);
         buildTree(root, player, 1, MAX_DEPTH);
@@ -82,7 +83,7 @@ public class Main {
 
                     newNode = buildTree(newNode, current_player, depth + 1, maxDepth);
 
-                    root.addChild(new TreeNode(temp));
+                    root.addChild(newNode);
                 }
                 catch (IllegalMoveException e) {
                     //do nothing, don't add child
@@ -152,7 +153,7 @@ public class Main {
         //check possible win situations
         //if player has already won -> return PLUS_INFINITY
         //if player has already lost -> return MINUS_INFINITY
-        //otherwise return score 0-68
+        //otherwise return score 0-92
 
         return 0;
     }
