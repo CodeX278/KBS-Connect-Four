@@ -16,7 +16,7 @@ public class GameCube {
         }
     }
 
-    public void setPiece(PIECE piece, int column, int row) throws IllegalMoveException {
+    public void placePiece(PIECE piece, int column, int row) throws IllegalMoveException {
         int height;
         for(height = 0; height < 4; height++) {
             if(pieces[column][row][height] == PIECE.EMPTY) {
@@ -27,5 +27,24 @@ public class GameCube {
         if(height == 4) {
             throw new IllegalMoveException("Piece could not be placed in pillar: <" + column +"," + row + ">");
         }
+    }
+
+    public GameCube clone() {
+        GameCube clone = new GameCube();
+
+        for(int a = 0; a < 4; a++) {
+            for(int b = 0; b < 4; b++) {
+                for(int c = 0; c < 4; c++) {
+                    try {
+                        clone.placePiece(pieces[a][b][c], a, b);
+                    }
+                    catch(IllegalMoveException e) {
+                        System.out.println("Error while cloning Cube: " + e.getMessage());
+                    }
+                }
+            }
+        }
+
+        return clone;
     }
 }
