@@ -28,4 +28,9 @@ public class GameCube {
             throw new IllegalMoveException("Piece could not be placed in pillar: <" + column +"," + row + ">");
         }
     }
+    
+    public PIECE getPiece(int column, int row, int height)
+    {
+        return pieces[column][row][height];
+    }
 }
