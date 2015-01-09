@@ -314,7 +314,9 @@ public class Main {
         }
         
         if(hit == 4)    return PLUS_INFINITY;
-        if(hit == -4)   return MINUS_INFINITY;
+        if(hit == -4)   {
+            return MINUS_INFINITY;
+        }
         if(notObstructed == 4) return 1;
         return 0;
     }
@@ -359,18 +361,22 @@ public class Main {
         if(sliceDim == 1)
         {
             for(int row = 0, column = 0; row < 4 && column < 4; row++, column++)
+            {
                 for(int height = 0; height < 4; height++)
                 {
-                    slice[column][row] = gc.getPiece(row, column, height);
+                    slice[column][height] = gc.getPiece(row, column, height);
                 }
+            }
         }
         else
         {
-            for(int row = 0, column = 3; row > 1 && column < 4; row++, column--)
+            for(int row = 0, column = 3; row < 4 && column > 0; row++, column--)
+            {
                 for(int height = 0; height < 4; height++)
                 {
                     slice[column][row] = gc.getPiece(row, column, height);
                 }
+            }
         }
         return slice;
     }
@@ -411,7 +417,9 @@ public class Main {
                 }
             }
             if(hit == 4)    return PLUS_INFINITY;
-            if(hit == -4)   return MINUS_INFINITY;
+            if(hit == -4)   {
+                return MINUS_INFINITY;
+            }
             if(notObstructed == 4) return 1;
             return 0;
     }
