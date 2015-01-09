@@ -275,7 +275,7 @@ public class Main {
         //Left bottom to right top
         if(diagonal == 0)
         {
-            for(int i = 0; i < 3; i++)
+            for(int i = 0; i < 4; i++)
             {
                 if(slice[i][i] == playerPiece) {
                     hit++;
@@ -295,7 +295,7 @@ public class Main {
         {
             if(diagonal == 1)
             {
-                for(int i = 0, k = 3; i < 3 && k>1; i++, k--)
+                for(int i = 0, k = 3; i < 4 && k > 0; i++, k--)
                 {
                     if(slice[i][k] == playerPiece) {
                         hit++;
