@@ -15,8 +15,6 @@ public class Main {
         //parse arguments, initialize GameCube
         inititializeCube(initialState, args[0]);
 
-        //System.out.println(initialState.getPiece(0,0,0))
-
         PIECE player;
 
         switch(args[1].toCharArray()[0]) {
@@ -50,23 +48,19 @@ public class Main {
     public static void inititializeCube(GameCube cube, String args) {
         PIECE piece;
 
-        for(int a = 0; a < 3; a++) {
-            for(int b = 0; b < 3; b++) {
-                for(int c = 0; c < 3; c++) {
-                    switch(args.charAt(a * 16 +  b * 4 + c)) {
-                        case '1' : piece = PIECE.PLAYER_1; break;
-                        case '2' : piece = PIECE.PLAYER_2; break;
-                        case '0' : continue;
-                        default: throw new IllegalArgumentException("Only '0', '1' and '2' are allowed in the input string.");
-                    }
+        for(int index = 0; index < args.length(); index++) {
+            switch(args.charAt(index)) {
+                case '1' : piece = PIECE.PLAYER_1; break;
+                case '2' : piece = PIECE.PLAYER_2; break;
+                case '0' : continue;
+                default: throw new IllegalArgumentException("Only '0', '1' and '2' are allowed in the input string.");
+            }
 
-                    try {
-                        cube.placePiece(piece, b, c);
-                    }
-                    catch (IllegalMoveException e) {
-                        throw new RuntimeException("Illegal move encountered while initializing cube");
-                    }
-                }
+            try {
+                cube.placePiece(piece, (index / 4) % 4, index % 4);
+            }
+            catch (IllegalMoveException e) {
+                throw new RuntimeException("Illegal move encountered while initializing cube");
             }
         }
     }
@@ -178,7 +172,7 @@ public class Main {
                 for(int b = 0; b < 4; b++) {
                     
                     tmpScore = checkObstruction(gc, 0, 0, a, b, player);
-                    if(tmpScore == 0 || tmpScore == 1)
+                    if(tmpScore != 0 && tmpScore != 1)
                     {return tmpScore;}
                     else
                     {   //No win/loss but possibly a score
@@ -186,7 +180,7 @@ public class Main {
                     }
                     
                     tmpScore = checkObstruction(gc, 1, a, 0, b, player);
-                    if(tmpScore == 0 || tmpScore == 1)
+                    if(tmpScore != 0 && tmpScore != 1)
                     {return tmpScore;}
                     else
                     {   //No win/loss but possibly a score
@@ -194,7 +188,7 @@ public class Main {
                     }
                     
                     tmpScore = checkObstruction(gc, 2, a, b, 0, player);
-                    if(tmpScore == 0 || tmpScore == 1)
+                    if(tmpScore != 0 && tmpScore != 1)
                     {return tmpScore;}
                     else
                     {   //No win/loss but possibly a score
