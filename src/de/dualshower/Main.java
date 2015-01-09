@@ -27,9 +27,11 @@ public class Main {
         System.out.println("initialScore: " + initialScore);
         if(initialScore == PLUS_INFINITY) {
             System.out.println("ALREADY WON");
+            return;
         }
         if(initialScore == MINUS_INFINITY) {
             System.out.println("ALREADY LOST");
+            return;
         }
 
         TreeNode root = new TreeNode(initialState);
@@ -314,7 +316,8 @@ public class Main {
         }
         
         if(hit == 4)    return PLUS_INFINITY;
-        if(hit == -4)   return MINUS_INFINITY;
+        if(hit == -4)
+            return MINUS_INFINITY;
         if(notObstructed == 4) return 1;
         return 0;
     }
