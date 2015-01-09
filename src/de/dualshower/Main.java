@@ -15,6 +15,8 @@ public class Main {
         //parse arguments, initialize GameCube
         inititializeCube(initialState, args[0]);
 
+        //System.out.println(initialState.getPiece(0,0,0))
+
         PIECE player;
 
         switch(args[1].toCharArray()[0]) {
@@ -176,7 +178,7 @@ public class Main {
                 for(int b = 0; b < 4; b++) {
                     
                     tmpScore = checkObstruction(gc, 0, 0, a, b, player);
-                    if(tmpScore < 0 || tmpScore > 4)
+                    if(tmpScore == 0 || tmpScore == 1)
                     {return tmpScore;}
                     else
                     {   //No win/loss but possibly a score
@@ -184,7 +186,7 @@ public class Main {
                     }
                     
                     tmpScore = checkObstruction(gc, 1, a, 0, b, player);
-                    if(tmpScore < 0 || tmpScore > 4)
+                    if(tmpScore == 0 || tmpScore == 1)
                     {return tmpScore;}
                     else
                     {   //No win/loss but possibly a score
@@ -192,7 +194,7 @@ public class Main {
                     }
                     
                     tmpScore = checkObstruction(gc, 2, a, b, 0, player);
-                         if(tmpScore < 0 || tmpScore > 4)
+                    if(tmpScore == 0 || tmpScore == 1)
                     {return tmpScore;}
                     else
                     {   //No win/loss but possibly a score
