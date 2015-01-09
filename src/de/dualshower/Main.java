@@ -202,9 +202,10 @@ public class Main {
 
             for(int i = 0; i<4; i++)
             {
+                PIECE[][] slice = sliceFront(gc, i);
                 for(int k = 0; k < 2; k++)
                 {
-                    tmpScore = checkObstructionDiagonal(sliceFront(gc, i), player, k);
+                    tmpScore = checkObstructionDiagonal(slice, player, k);
                     if(tmpScore == 0 || tmpScore == 1)
                     {
                         score += tmpScore;
@@ -218,9 +219,10 @@ public class Main {
             }
             for(int i = 0; i<4; i++)
             {
+                PIECE[][] slice = sliceSide(gc, i);
                 for(int k = 0; k < 2; k++)
                 {
-                    tmpScore = checkObstructionDiagonal(sliceSide(gc, i), player, k);
+                    tmpScore = checkObstructionDiagonal(slice, player, k);
                     if(tmpScore == 0 || tmpScore == 1)
                     {
                         score += tmpScore;
@@ -234,9 +236,10 @@ public class Main {
             }
             for(int i = 0; i<4; i++)
             {
-                 for(int k = 0; k < 2; k++)
+                PIECE[][] slice = sliceBottom(gc, i);
+                for(int k = 0; k < 2; k++)
                 {
-                    tmpScore = checkObstructionDiagonal(sliceBottom(gc, i), player, k);
+                    tmpScore = checkObstructionDiagonal(slice, player, k);
                     if(tmpScore == 0 || tmpScore == 1)
                     {
                         score += tmpScore;
@@ -250,9 +253,10 @@ public class Main {
             }
             for(int i = 0; i<2; i++)
             {
-                 for(int k = 0; k < 2; k++)
+                PIECE[][] slice = sliceAcross(gc, i);
+                for(int k = 0; k < 2; k++)
                 {
-                    tmpScore = checkObstructionDiagonal(sliceAcross(gc, i), player, k);
+                    tmpScore = checkObstructionDiagonal(slice, player, k);
                     if(tmpScore == 0 || tmpScore == 1)
                     {
                         score += tmpScore;
@@ -297,7 +301,7 @@ public class Main {
         {
             if(diagonal == 1)
             {
-                for(int i = 0, k = 3; i < 4 && k > 0; i++, k--)
+                for(int i = 0, k = 3; i < 4 && k >= 0; i++, k--)
                 {
                     if(slice[i][k] == playerPiece) {
                         hit++;
@@ -370,11 +374,11 @@ public class Main {
         }
         else
         {
-            for(int row = 0, column = 3; row < 4 && column > 0; row++, column--)
+            for(int row = 0, column = 3; row < 4 && column >= 0; row++, column--)
             {
                 for(int height = 0; height < 4; height++)
                 {
-                    slice[column][row] = gc.getPiece(row, column, height);
+                    slice[row][height] = gc.getPiece(row, column, height);
                 }
             }
         }
