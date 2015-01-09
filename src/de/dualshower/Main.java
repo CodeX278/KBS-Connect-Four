@@ -210,8 +210,8 @@ public class Main {
             //Also check diagonals
             for(int i = 0; i<4; i++)
             {
-                tmpScore = checkObstructionDiagonal(sliceA(gc, row), column, height);
-                  if(tmpScore == 0 || tmpScore == 1)
+                tmpScore = checkObstructionDiagonal(sliceSide(gc, i), row, height);
+                if(tmpScore == 0 || tmpScore == 1)
                 {
                     score += tmpScore;
                 }
@@ -221,6 +221,34 @@ public class Main {
                     return tmpScore;
                 }
             }
+                        for(int i = 0; i<4; i++)
+            {
+                tmpScore = checkObstructionDiagonal(sliceBottom(gc, i), column, row);
+                if(tmpScore == 0 || tmpScore == 1)
+                {
+                    score += tmpScore;
+                }
+                else
+                {
+                    //Win or loss
+                    return tmpScore;
+                }
+            }
+            for(int i = 0; i<4; i++)
+            {
+                tmpScore = checkObstructionDiagonal(sliceAcross(gc, i), column, height);
+                if(tmpScore == 0 || tmpScore == 1)
+                {
+                    score += tmpScore;
+                }
+                else
+                {
+                    //Win or loss
+                    return tmpScore;
+                }
+            }
+            //Todo: Check slice across matrices.
+            
         }
         
         return score;
@@ -269,8 +297,6 @@ public class Main {
                         hit--;
                     }
                 }
-
-
             }
         }
         
@@ -280,7 +306,7 @@ public class Main {
         return 0;
     }
     
-    public PIECE[][] sliceA(GameCube gc, int sliceDim)
+    public PIECE[][] sliceFront(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
         for(int column = 0; column < 4; column++)
@@ -291,7 +317,7 @@ public class Main {
         return slice;
     }
     
-    public PIECE[][] sliceB(GameCube gc, int sliceDim)
+    public PIECE[][] sliceSide(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
         for(int row = 0; row < 4; row++)
@@ -302,7 +328,7 @@ public class Main {
         return slice;
     }
     
-    public PIECE[][] sliceC(GameCube gc, int sliceDim)
+    public PIECE[][] sliceBottom(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
         for(int row = 0; row < 4; row++)
@@ -310,6 +336,29 @@ public class Main {
             {
                 slice[column][row] = gc.getPiece(row, column, sliceDim);
             }
+        return slice;
+    }
+    
+    public PIECE[][] sliceAcross(GameCube gc, int sliceDim)
+    {
+        PIECE[][] slice = new PIECE[4][4];
+     
+        if(sliceDim == 1)
+        {
+            for(int row = 0, column = 0; row < 4 && column < 4; row++, column++)
+                for(int height = 0; height < 4; height++)
+                {
+                    slice[column][row] = gc.getPiece(row, column, height);
+                }
+        }
+        else
+        {
+            for(int row = 0, column = 3; row > 1 && column < 4; row++, column--)
+                for(int height = 0; height < 4; height++)
+                {
+                    slice[column][row] = gc.getPiece(row, column, height);
+                }
+        }
         return slice;
     }
     
