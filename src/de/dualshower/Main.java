@@ -155,112 +155,113 @@ public class Main {
     public static int rateGameCube(GameCube gc, PIECE player) {
         int score = 0, tmpScore = 0;
         
-        for(int height = 0; height < 4; height++)
-        {
-            for(int column = 0; column < 4; column++)
-            {
-                for(int row = 0; row < 4; row++)
-                {
-                    tmpScore = rateWinPiece(gc, player, column, row, height);
+ 
+        for(int a = 0; a < 4; a++) {
+                for(int b = 0; b < 4; b++) {
                     
-                    //Check for win/loss
+                    tmpScore = checkObstruction(gc, 0, 0, a, b, player);
                     if(tmpScore < 0 || tmpScore > 4)
+                    {return tmpScore;}
+                    else
+                    {   //No win/loss but possibly a score
+                        score += tmpScore;
+                    }
+                    
+                    tmpScore = checkObstruction(gc, 1, a, 0, b, player);
+                    if(tmpScore < 0 || tmpScore > 4)
+                    {return tmpScore;}
+                    else
+                    {   //No win/loss but possibly a score
+                        score += tmpScore;
+                    }
+                    
+                    tmpScore = checkObstruction(gc, 2, a, b, 0, player);
+                         if(tmpScore < 0 || tmpScore > 4)
+                    {return tmpScore;}
+                    else
+                    {   //No win/loss but possibly a score
+                        score += tmpScore;
+                    }
+
+                }
+        }
+
+            for(int i = 0; i<4; i++)
+            {
+                for(int k = 0; k < 2; k++)
+                {
+                    tmpScore = checkObstructionDiagonal(sliceFront(gc, i), player, k);
+                    if(tmpScore == 0 || tmpScore == 1)
                     {
-                        return tmpScore;
+                        score += tmpScore;
                     }
                     else
                     {
-                        //No win/loss but possibly a score
-                        score += tmpScore;
+                        //Win or loss
+                        return tmpScore;
                     }
                 }
             }
-        }
-        
-        return score;
-    }
-    
-    public int rateWinPiece(GameCube gc, PIECE player, int column, int row, int height)
-    {
-        PIECE piece = gc.getPiece(column, row, height);
-        int score = 0, tmpScore = 0;
-        
-        //Piece empty or enemy, no addition to score
-        if(piece != player){
-            return 0;
-        }
-        else
-        {
-            //Check all three dimensions for obstructions, wins or losses
-            for(int i = 0; i < 3; i++)
-            {
-                tmpScore = checkObstruction(gc, i, column, row, height, player);
-                
-                if(tmpScore == 0 || tmpScore == 1)
-                {
-                    score += tmpScore;
-                }
-                else
-                {
-                    //Win or loss
-                    return tmpScore;
-                }
-            }
-            
-            //Also check diagonals
             for(int i = 0; i<4; i++)
             {
-                tmpScore = checkObstructionDiagonal(sliceSide(gc, i), row, height);
-                if(tmpScore == 0 || tmpScore == 1)
+                for(int k = 0; k < 2; k++)
                 {
-                    score += tmpScore;
-                }
-                else
-                {
-                    //Win or loss
-                    return tmpScore;
-                }
-            }
-                        for(int i = 0; i<4; i++)
-            {
-                tmpScore = checkObstructionDiagonal(sliceBottom(gc, i), column, row);
-                if(tmpScore == 0 || tmpScore == 1)
-                {
-                    score += tmpScore;
-                }
-                else
-                {
-                    //Win or loss
-                    return tmpScore;
+                    tmpScore = checkObstructionDiagonal(sliceSide(gc, i), player, k);
+                    if(tmpScore == 0 || tmpScore == 1)
+                    {
+                        score += tmpScore;
+                    }
+                    else
+                    {
+                        //Win or loss
+                        return tmpScore;
+                    }
                 }
             }
             for(int i = 0; i<4; i++)
             {
-                tmpScore = checkObstructionDiagonal(sliceAcross(gc, i), column, height);
-                if(tmpScore == 0 || tmpScore == 1)
+                 for(int k = 0; k < 2; k++)
                 {
-                    score += tmpScore;
-                }
-                else
-                {
-                    //Win or loss
-                    return tmpScore;
+                    tmpScore = checkObstructionDiagonal(sliceBottom(gc, i), player, k);
+                    if(tmpScore == 0 || tmpScore == 1)
+                    {
+                        score += tmpScore;
+                    }
+                    else
+                    {
+                        //Win or loss
+                        return tmpScore;
+                    }
                 }
             }
-            //Todo: Check slice across matrices.
-            
-        }
-        
+            for(int i = 0; i<2; i++)
+            {
+                 for(int k = 0; k < 2; k++)
+                {
+                    tmpScore = checkObstructionDiagonal(sliceAcross(gc, i), player, k);
+                    if(tmpScore == 0 || tmpScore == 1)
+                    {
+                        score += tmpScore;
+                    }
+                    else
+                    {
+                        //Win or loss
+                        return tmpScore;
+                    }
+                }
+            }
+                   
         return score;
     }
     
-    public int checkObstructionDiagonal(PIECE[][] slice, int column, int row)
+
+    
+    public static int checkObstructionDiagonal(PIECE[][] slice, PIECE playerPiece, int diagonal)
     {
-        PIECE playerPiece = slice[column][row];
         int hit = 0, notObstructed = 0;
         
         //Left bottom to right top
-        if(column == row)
+        if(diagonal == 0)
         {
             for(int i = 0; i < 3; i++)
             {
@@ -280,7 +281,7 @@ public class Main {
         }
         else
         {
-            if(column + row == 3)
+            if(diagonal == 1)
             {
                 for(int i = 0, k = 3; i < 3 && k>1; i++, k--)
                 {
@@ -306,7 +307,7 @@ public class Main {
         return 0;
     }
     
-    public PIECE[][] sliceFront(GameCube gc, int sliceDim)
+    public static PIECE[][] sliceFront(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
         for(int column = 0; column < 4; column++)
@@ -317,7 +318,7 @@ public class Main {
         return slice;
     }
     
-    public PIECE[][] sliceSide(GameCube gc, int sliceDim)
+    public static PIECE[][] sliceSide(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
         for(int row = 0; row < 4; row++)
@@ -328,7 +329,7 @@ public class Main {
         return slice;
     }
     
-    public PIECE[][] sliceBottom(GameCube gc, int sliceDim)
+    public static PIECE[][] sliceBottom(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
         for(int row = 0; row < 4; row++)
@@ -339,7 +340,7 @@ public class Main {
         return slice;
     }
     
-    public PIECE[][] sliceAcross(GameCube gc, int sliceDim)
+    public static PIECE[][] sliceAcross(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
      
@@ -362,7 +363,7 @@ public class Main {
         return slice;
     }
     
-    public int checkObstruction(GameCube gc, int variableDimension, int column, int row, int height, PIECE player)
+    public static int checkObstruction(GameCube gc, int variableDimension, int column, int row, int height, PIECE player)
     {
         int     i = 0, hit = 0, notObstructed = 0;
         PIECE   checkPiece = PIECE.EMPTY;
