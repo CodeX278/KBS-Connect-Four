@@ -21,6 +21,7 @@ public class GameCube {
         for(height = 0; height < 4; height++) {
             if(pieces[column][row][height] == PIECE.EMPTY) {
                 pieces[column][row][height] = piece;
+                return;
             }
         }
 

@@ -11,10 +11,26 @@ public class Main {
 
     public static void main(String[] args) {
         GameCube initialState = new GameCube();
-        PIECE player = PIECE.PLAYER_1; //set according to arguments
 
         //parse arguments, initialize GameCube
-        inititalizeCube(initialState,"");
+        inititializeCube(initialState, args[0]);
+
+        PIECE player;
+
+        switch(args[1].toCharArray()[0]) {
+            case '1' : player = PIECE.PLAYER_1; break;
+            case '2' : player = PIECE.PLAYER_2; break;
+            default  : throw new IllegalArgumentException("Second Argument must be '1' or '2'");
+        }
+
+        int initialScore = rateGameCube(initialState, player);
+        System.out.println("initialScore: " + initialScore);
+        if(initialScore == PLUS_INFINITY) {
+            System.out.println("ALREADY WON");
+        }
+        if(initialScore == MINUS_INFINITY) {
+            System.out.println("ALREADY LOST");
+        }
 
         TreeNode root = new TreeNode(initialState);
         buildTree(root, player, 1, MAX_DEPTH);
@@ -29,7 +45,7 @@ public class Main {
      * @param cube : The cube to be filled
      * @param args : String of 64 characters either 0,1 or 2. 0 -> empty, 1 -> player 1, 2 -> player 2
      */
-    public static void inititalizeCube(GameCube cube, String args) {
+    public static void inititializeCube(GameCube cube, String args) {
         PIECE piece;
 
         for(int a = 0; a < 3; a++) {
@@ -38,7 +54,7 @@ public class Main {
                     switch(args.charAt(a * 16 +  b * 4 + c)) {
                         case '1' : piece = PIECE.PLAYER_1; break;
                         case '2' : piece = PIECE.PLAYER_2; break;
-                        case '0' : piece = PIECE.EMPTY; break;
+                        case '0' : continue;
                         default: throw new IllegalArgumentException("Only '0', '1' and '2' are allowed in the input string.");
                     }
 
@@ -135,7 +151,7 @@ public class Main {
 
 
     public static String getBestMove(TreeNode root) {
-        String bestMove = "LOST";
+        String bestMove = "";
         int bestScore = MINUS_INFINITY;
 
         for(TreeNode child : root.getChildren()) {
