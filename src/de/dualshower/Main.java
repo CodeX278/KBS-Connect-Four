@@ -182,7 +182,6 @@ public class Main {
                         score += tmpScore;
                     }
                     else {
-                        System.out.println("Win on row " + a + ", height" + b );
                         return tmpScore;
                     }
                     
@@ -192,7 +191,6 @@ public class Main {
                         score += tmpScore;
                     }
                     else {
-                        System.out.println("Win on column " + a + ", height" + b );
                         return tmpScore;
                     }
 
@@ -202,7 +200,6 @@ public class Main {
                         score += tmpScore;
                     }
                     else {
-                        System.out.println("Win on column " + a + ", row " + b );
                         return tmpScore;
                     }
 
@@ -211,7 +208,7 @@ public class Main {
 
             for(int i = 0; i<4; i++)
             {
-                PIECE[][] slice = sliceFront(gc, i);
+                PIECE[][] slice = sliceA(gc, i);
                 for(int k = 0; k < 2; k++)
                 {
                     tmpScore = checkObstructionDiagonal(slice, player, k);
@@ -228,7 +225,7 @@ public class Main {
             }
             for(int i = 0; i<4; i++)
             {
-                PIECE[][] slice = sliceSide(gc, i);
+                PIECE[][] slice = sliceB(gc, i);
                 for(int k = 0; k < 2; k++)
                 {
                     tmpScore = checkObstructionDiagonal(slice, player, k);
@@ -245,7 +242,7 @@ public class Main {
             }
             for(int i = 0; i<4; i++)
             {
-                PIECE[][] slice = sliceBottom(gc, i);
+                PIECE[][] slice = sliceC(gc, i);
                 for(int k = 0; k < 2; k++)
                 {
                     tmpScore = checkObstructionDiagonal(slice, player, k);
@@ -262,7 +259,7 @@ public class Main {
             }
             for(int i = 0; i<2; i++)
             {
-                PIECE[][] slice = sliceAcross(gc, i);
+                PIECE[][] slice = sliceD(gc, i);
                 for(int k = 0; k < 2; k++)
                 {
                     tmpScore = checkObstructionDiagonal(slice, player, k);
@@ -334,60 +331,60 @@ public class Main {
         return 0;
     }
     
-    public static PIECE[][] sliceFront(GameCube gc, int sliceDim)
+    public static PIECE[][] sliceA(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
-        for(int column = 0; column < 4; column++)
-            for(int height = 0; height < 4; height++)
+        for(int a = 0; a < 4; a++)
+            for(int b = 0; b < 4; b++)
             {
-                slice[column][height] = gc.getPiece(sliceDim, column, height);
+                slice[a][b] = gc.getPiece(sliceDim, a, b);
             }
         return slice;
     }
     
-    public static PIECE[][] sliceSide(GameCube gc, int sliceDim)
+    public static PIECE[][] sliceB(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
-        for(int row = 0; row < 4; row++)
-            for(int height = 0; height < 4; height++)
+        for(int a = 0; a < 4; a++)
+            for(int b = 0; b < 4; b++)
             {
-                slice[row][height] = gc.getPiece(row, sliceDim, height);
+                slice[a][b] = gc.getPiece(a, sliceDim, b);
             }
         return slice;
     }
     
-    public static PIECE[][] sliceBottom(GameCube gc, int sliceDim)
+    public static PIECE[][] sliceC(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
-        for(int row = 0; row < 4; row++)
-            for(int column = 0; column < 4; column++)
+        for(int a = 0; a < 4; a++)
+            for(int b = 0; b < 4; b++)
             {
-                slice[column][row] = gc.getPiece(row, column, sliceDim);
+                slice[b][a] = gc.getPiece(a, b, sliceDim);
             }
         return slice;
     }
     
-    public static PIECE[][] sliceAcross(GameCube gc, int sliceDim)
+    public static PIECE[][] sliceD(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
      
         if(sliceDim == 1)
         {
-            for(int row = 0, column = 0; row < 4 && column < 4; row++, column++)
+            for(int a = 0, b = 0; a < 4 && b < 4; a++, b++)
             {
-                for(int height = 0; height < 4; height++)
+                for(int c = 0; c < 4; c++)
                 {
-                    slice[column][height] = gc.getPiece(row, column, height);
+                    slice[b][c] = gc.getPiece(a, b, c);
                 }
             }
         }
         else
         {
-            for(int row = 0, column = 3; row < 4 && column >= 0; row++, column--)
+            for(int a = 0, b = 3; a < 4 && b >= 0; a++, b--)
             {
-                for(int height = 0; height < 4; height++)
+                for(int c = 0; c < 4; c++)
                 {
-                    slice[row][height] = gc.getPiece(row, column, height);
+                    slice[a][c] = gc.getPiece(a, b, c);
                 }
             }
         }
