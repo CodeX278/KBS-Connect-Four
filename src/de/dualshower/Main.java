@@ -35,7 +35,7 @@ public class Main {
         }
 
         TreeNode root = new TreeNode(initialState);
-        buildTree(root, player, 1, MAX_DEPTH);
+        buildTree(root, player, 0, MAX_DEPTH);
         calculateScore(root, player, true);
         String bestMove = getBestMove(root);
 
@@ -59,7 +59,7 @@ public class Main {
             }
 
             try {
-                cube.placePiece(piece, (index / 4) % 4, index % 4);
+                cube.placePiece(piece, index % 4, (index / 4) % 4);
             }
             catch (IllegalMoveException e) {
                 throw new RuntimeException("Illegal move encountered while initializing cube");
@@ -77,25 +77,27 @@ public class Main {
      */
     public static TreeNode buildTree(TreeNode root, PIECE current_player, int depth, int maxDepth) {
         if(depth < maxDepth) {
-            GameCube temp;
+
             TreeNode newNode;
 
+            PIECE nextPlayer;
+
+            if(current_player == PIECE.PLAYER_1) {
+                nextPlayer = PIECE.PLAYER_2;
+            }
+            else {
+                nextPlayer = PIECE.PLAYER_1;
+            }
+
             for(int i = 0; i < 16; i++) {
-                temp = root.getGameCube().clone();
+                GameCube temp = root.getGameCube().clone();
                 try {
                     temp.placePiece(current_player,i % 4, i / 4);
-
-                    if(current_player == PIECE.PLAYER_1) {
-                        current_player = PIECE.PLAYER_2;
-                    }
-                    else {
-                        current_player = PIECE.PLAYER_1;
-                    }
 
                     newNode = new TreeNode(temp);
                     newNode.setMove("<" + i % 4 + "," + i / 4 + ">");
 
-                    newNode = buildTree(newNode, current_player, depth + 1, maxDepth);
+                    newNode = buildTree(newNode, nextPlayer, depth + 1, maxDepth);
 
                     root.addChild(newNode);
                 }
@@ -153,13 +155,14 @@ public class Main {
         int bestScore = MINUS_INFINITY;
 
         for(TreeNode child : root.getChildren()) {
+            System.out.println("Move: " + child.getMove() + ", score: " + child.getScore());
             if(child.getScore() > bestScore) {
                 bestScore = child.getScore();
                 bestMove = child.getMove();
             }
         }
 
-        return bestMove;
+        return bestMove + ": " + bestScore;
     }
 
     //check possible win situations
@@ -168,7 +171,6 @@ public class Main {
     //otherwise return score 0-68
     public static int rateGameCube(GameCube gc, PIECE player) {
         int score = 0, tmpScore = 0;
-        
  
         for(int a = 0; a < 4; a++) {
                 for(int b = 0; b < 4; b++) {
@@ -180,6 +182,7 @@ public class Main {
                         score += tmpScore;
                     }
                     else {
+                        System.out.println("Win on row " + a + ", height" + b );
                         return tmpScore;
                     }
                     
@@ -189,6 +192,7 @@ public class Main {
                         score += tmpScore;
                     }
                     else {
+                        System.out.println("Win on column " + a + ", height" + b );
                         return tmpScore;
                     }
 
@@ -198,6 +202,7 @@ public class Main {
                         score += tmpScore;
                     }
                     else {
+                        System.out.println("Win on column " + a + ", row " + b );
                         return tmpScore;
                     }
 
@@ -325,7 +330,7 @@ public class Main {
         
         if(hit == 4)    return PLUS_INFINITY;
         if(hit == -4)   return MINUS_INFINITY;
-        if(notObstructed == 4) return hit;
+        if(notObstructed == 4) return hit + 1;
         return 0;
     }
     
@@ -424,9 +429,12 @@ public class Main {
                     hit--;
                 }
             }
-            if(hit == 4)    return PLUS_INFINITY;
+            if(hit == 4)
+            {
+                return PLUS_INFINITY;
+            }
             if(hit == -4)   return MINUS_INFINITY;
-            if(notObstructed == 4) return hit;
+            if(notObstructed == 4) return hit + 1;
             return 0;
     }
 }
