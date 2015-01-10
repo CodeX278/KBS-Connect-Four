@@ -174,27 +174,31 @@ public class Main {
                 for(int b = 0; b < 4; b++) {
                     
                     tmpScore = checkObstruction(gc, 0, 0, a, b, player);
-                    if(tmpScore != 0 && tmpScore != 1)
-                    {return tmpScore;}
-                    else
+
+                    if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
                     {   //No win/loss but possibly a score
                         score += tmpScore;
+                    }
+                    else {
+                        return tmpScore;
                     }
                     
                     tmpScore = checkObstruction(gc, 1, a, 0, b, player);
-                    if(tmpScore != 0 && tmpScore != 1)
-                    {return tmpScore;}
-                    else
+                    if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
                     {   //No win/loss but possibly a score
                         score += tmpScore;
                     }
-                    
+                    else {
+                        return tmpScore;
+                    }
+
                     tmpScore = checkObstruction(gc, 2, a, b, 0, player);
-                    if(tmpScore != 0 && tmpScore != 1)
-                    {return tmpScore;}
-                    else
+                    if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
                     {   //No win/loss but possibly a score
                         score += tmpScore;
+                    }
+                    else {
+                        return tmpScore;
                     }
 
                 }
@@ -206,7 +210,7 @@ public class Main {
                 for(int k = 0; k < 2; k++)
                 {
                     tmpScore = checkObstructionDiagonal(slice, player, k);
-                    if(tmpScore == 0 || tmpScore == 1)
+                    if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
                     {
                         score += tmpScore;
                     }
@@ -223,7 +227,7 @@ public class Main {
                 for(int k = 0; k < 2; k++)
                 {
                     tmpScore = checkObstructionDiagonal(slice, player, k);
-                    if(tmpScore == 0 || tmpScore == 1)
+                    if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
                     {
                         score += tmpScore;
                     }
@@ -240,7 +244,7 @@ public class Main {
                 for(int k = 0; k < 2; k++)
                 {
                     tmpScore = checkObstructionDiagonal(slice, player, k);
-                    if(tmpScore == 0 || tmpScore == 1)
+                    if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
                     {
                         score += tmpScore;
                     }
@@ -257,7 +261,7 @@ public class Main {
                 for(int k = 0; k < 2; k++)
                 {
                     tmpScore = checkObstructionDiagonal(slice, player, k);
-                    if(tmpScore == 0 || tmpScore == 1)
+                    if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
                     {
                         score += tmpScore;
                     }
@@ -321,7 +325,7 @@ public class Main {
         
         if(hit == 4)    return PLUS_INFINITY;
         if(hit == -4)   return MINUS_INFINITY;
-        if(notObstructed == 4) return 1;
+        if(notObstructed == 4) return hit;
         return 0;
     }
     
@@ -422,7 +426,7 @@ public class Main {
             }
             if(hit == 4)    return PLUS_INFINITY;
             if(hit == -4)   return MINUS_INFINITY;
-            if(notObstructed == 4) return 1;
+            if(notObstructed == 4) return hit;
             return 0;
     }
 }
