@@ -9,13 +9,20 @@ public class Main {
 
     public enum PIECE {EMPTY, PLAYER_1, PLAYER_2}
 
+
+    /**
+     * Main-function - reads parameters and controls program flow
+     * @param args : args[0]: String of 1 to 64 characters( allowed are 0, 1, 2) representing the initial state of the Game
+     *                        trailing zeros can be omitted.
+     *               args[1]: either '1' or '2' - indicates the player at turn
+     */
     public static void main(String[] args) {
         GameCube initialState = new GameCube();
+        PIECE player;
 
-        //parse arguments, initialize GameCube
+        //parse args[0] to initialize GameCube
         inititializeCube(initialState, args[0]);
 
-        PIECE player;
 
         switch(args[1].toCharArray()[0]) {
             case '1' : player = PIECE.PLAYER_1; break;
@@ -24,7 +31,6 @@ public class Main {
         }
 
         int initialScore = rateGameCube(initialState, player);
-        System.out.println("initialScore: " + initialScore);
         if(initialScore == PLUS_INFINITY) {
             System.out.println("ALREADY WON");
             return;
@@ -155,14 +161,13 @@ public class Main {
         int bestScore = MINUS_INFINITY;
 
         for(TreeNode child : root.getChildren()) {
-            System.out.println("Move: " + child.getMove() + ", score: " + child.getScore());
             if(child.getScore() > bestScore) {
                 bestScore = child.getScore();
                 bestMove = child.getMove();
             }
         }
 
-        return bestMove + ": " + bestScore;
+        return bestMove;
     }
 
     //check possible win situations
