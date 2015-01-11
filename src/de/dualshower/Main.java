@@ -30,6 +30,7 @@ public class Main {
             default  : throw new IllegalArgumentException("Second Argument must be '1' or '2'");
         }
 
+        //check initial state for win or loose conditions, skip calculation if found
         int initialScore = rateGameCube(initialState, player);
         if(initialScore == PLUS_INFINITY) {
             System.out.println("ALREADY WON");
@@ -40,11 +41,15 @@ public class Main {
             return;
         }
 
+        //initial state will be root of the state-tree
         TreeNode root = new TreeNode(initialState);
+        //Build up the tree to the desired DEPTH
         buildTree(root, player, 0, MAX_DEPTH);
+        //populate the nodes of the tree with their corresponding scores
         calculateScore(root, player, true);
+        //retrieve the best possible move from the tree
         String bestMove = getBestMove(root);
-
+        //return the best found move to the player
         System.out.println("Best move: " + bestMove);
     }
 
@@ -88,6 +93,7 @@ public class Main {
 
             PIECE nextPlayer;
 
+            //invert current_player
             if(current_player == PIECE.PLAYER_1) {
                 nextPlayer = PIECE.PLAYER_2;
             }
@@ -95,14 +101,18 @@ public class Main {
                 nextPlayer = PIECE.PLAYER_1;
             }
 
+            //iterate over all theoretically possible moves
             for(int i = 0; i < 16; i++) {
+                //clone the current state of the game
                 GameCube temp = root.getGameCube().clone();
                 try {
+                    //try to add a new piece
                     temp.placePiece(current_player,i % 4, i / 4);
 
                     newNode = new TreeNode(temp);
                     newNode.setMove("<" + i % 4 + "," + i / 4 + ">");
 
+                    //recursively build the sub trees for new node
                     newNode = buildTree(newNode, nextPlayer, depth + 1, maxDepth);
 
                     root.addChild(newNode);
@@ -126,15 +136,18 @@ public class Main {
     public static int calculateScore(TreeNode root, PIECE player, boolean state) {
         int bestScore;
 
+        //end condition for recursion
         if(root.isLeaf()) {
             bestScore = rateGameCube(root.getGameCube(), player);
         }
         else {
             int score;
 
+            //Max-state
             if(state) {
                 bestScore = MINUS_INFINITY;
             }
+            //Min-state
             else {
                 bestScore = PLUS_INFINITY;
             }
@@ -142,9 +155,11 @@ public class Main {
             for(TreeNode node : root.getChildren()) {
                 score = calculateScore(node, player, !state);
 
+                //Max-state
                 if(state) {
                     bestScore = Math.max(bestScore, score);
                 }
+                //Min-state
                 else {
                     bestScore = Math.min(bestScore, score);
                 }
@@ -155,11 +170,16 @@ public class Main {
         return bestScore;
     }
 
-
+    /**
+     * Iterates over all children and finds the child with the best score
+     * @param root : root-Node of the tree to search
+     * @return : A String of the format <x,y> representing the best move found
+     */
     public static String getBestMove(TreeNode root) {
         String bestMove = "";
         int bestScore = MINUS_INFINITY;
 
+        //find best child
         for(TreeNode child : root.getChildren()) {
             if(child.getScore() > bestScore) {
                 bestScore = child.getScore();
@@ -170,13 +190,17 @@ public class Main {
         return bestMove;
     }
 
-    //check possible win situations
-    //if player has already won -> return PLUS_INFINITY
-    //if player has already lost -> return MINUS_INFINITY
-    //otherwise return score 0-68
+    /**
+     * Calculates a rating for a given GameCube
+     * @param gc : The GameCube to rate
+     * @param player : The piece that the player is using
+     * @return : MINUS_INFINITY if the player has lost, PLUS_INFINITY if the player has won, or score in between
+     */
     public static int rateGameCube(GameCube gc, PIECE player) {
-        int score = 0, tmpScore = 0;
- 
+        int score = 0;
+        int tmpScore;
+
+        //check straight lines
         for(int a = 0; a < 4; a++) {
                 for(int b = 0; b < 4; b++) {
                     
@@ -211,83 +235,143 @@ public class Main {
                 }
         }
 
-            for(int i = 0; i<4; i++)
+        //chekc diagonals
+        for(int i = 0; i<4; i++)
+        {
+            PIECE[][] slice = sliceA(gc, i);
+            for(int k = 0; k < 2; k++)
             {
-                PIECE[][] slice = sliceA(gc, i);
-                for(int k = 0; k < 2; k++)
+                tmpScore = checkObstructionDiagonal(slice, player, k);
+                if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
                 {
-                    tmpScore = checkObstructionDiagonal(slice, player, k);
-                    if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
-                    {
-                        score += tmpScore;
-                    }
-                    else
-                    {
-                        //Win or loss
-                        return tmpScore;
-                    }
+                    score += tmpScore;
+                }
+                else
+                {
+                    //Win or loss
+                    return tmpScore;
                 }
             }
-            for(int i = 0; i<4; i++)
+        }
+        for(int i = 0; i<4; i++)
+        {
+            PIECE[][] slice = sliceB(gc, i);
+            for(int k = 0; k < 2; k++)
             {
-                PIECE[][] slice = sliceB(gc, i);
-                for(int k = 0; k < 2; k++)
+                tmpScore = checkObstructionDiagonal(slice, player, k);
+                if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
                 {
-                    tmpScore = checkObstructionDiagonal(slice, player, k);
-                    if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
-                    {
-                        score += tmpScore;
-                    }
-                    else
-                    {
-                        //Win or loss
-                        return tmpScore;
-                    }
+                    score += tmpScore;
+                }
+                else
+                {
+                    //Win or loss
+                    return tmpScore;
                 }
             }
-            for(int i = 0; i<4; i++)
+        }
+        for(int i = 0; i<4; i++)
+        {
+            PIECE[][] slice = sliceC(gc, i);
+            for(int k = 0; k < 2; k++)
             {
-                PIECE[][] slice = sliceC(gc, i);
-                for(int k = 0; k < 2; k++)
+                tmpScore = checkObstructionDiagonal(slice, player, k);
+                if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
                 {
-                    tmpScore = checkObstructionDiagonal(slice, player, k);
-                    if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
-                    {
-                        score += tmpScore;
-                    }
-                    else
-                    {
-                        //Win or loss
-                        return tmpScore;
-                    }
+                    score += tmpScore;
+                }
+                else
+                {
+                    //Win or loss
+                    return tmpScore;
                 }
             }
-            for(int i = 0; i<2; i++)
+        }
+        for(int i = 0; i<2; i++)
+        {
+            PIECE[][] slice = sliceD(gc, i);
+            for(int k = 0; k < 2; k++)
             {
-                PIECE[][] slice = sliceD(gc, i);
-                for(int k = 0; k < 2; k++)
+                tmpScore = checkObstructionDiagonal(slice, player, k);
+                if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
                 {
-                    tmpScore = checkObstructionDiagonal(slice, player, k);
-                    if(tmpScore != MINUS_INFINITY && tmpScore != PLUS_INFINITY)
-                    {
-                        score += tmpScore;
-                    }
-                    else
-                    {
-                        //Win or loss
-                        return tmpScore;
-                    }
+                    score += tmpScore;
+                }
+                else
+                {
+                    //Win or loss
+                    return tmpScore;
                 }
             }
+        }
                    
         return score;
     }
-    
 
-    
+    /**
+     * Checks one straight line in the cube for obstruction by the enemy player
+     * @param gc : The GameCube to check in
+     * @param variableDimension : The direction of the line
+     * @param column : The column of the piece that marks the starting point of the line
+     * @param row :    The row    of the piece that marks the starting point of the line
+     * @param height : The height of the piece that marks the starting point of the line
+     * @param player : The piece that the player is using
+     * @return MINUS_INFINITY if the player has lost, PLUS_INFINITY if the player has won, or score in between
+     */
+    public static int checkObstruction(GameCube gc, int variableDimension, int column, int row, int height, PIECE player)
+    {
+        int hit = 0; //counts the non-empty pieces in the line
+        int notObstructed = 0; //counts the empty or player pieces in the line
+        PIECE   checkPiece = PIECE.EMPTY; //the piece that is currently checked
+
+        //iterate through the line
+        for(int i = 0; i < 4; i++)
+        {
+            switch(variableDimension)
+            {
+                case 0:
+                    checkPiece = gc.getPiece(i, row, height);
+                    break;
+                case 1:
+                    checkPiece = gc.getPiece(column, i, height);
+                    break;
+                case 2:
+                    checkPiece = gc.getPiece(column, row, i);
+                    break;
+            }
+
+            if(checkPiece == player)
+            {
+                hit++;
+                notObstructed++;
+            }
+            else if (checkPiece == PIECE.EMPTY)
+            {
+                notObstructed++;
+            }
+            else
+            {
+                hit--;
+            }
+        }
+
+        if(hit == 4) return PLUS_INFINITY; //Player has won in this line
+        if(hit == -4) return MINUS_INFINITY; //Player has lost in this line
+        if(notObstructed == 4) return hit + 1; //Line is not obstructed by enemy
+        return 0; //Line is obstructed by the enemy
+    }
+
+    /**
+     * Checks one diagonal in a slice of the cube for obstruction by the enemy player
+     * @param slice : The 4x4 slice that should be searched
+     * @param playerPiece : The piece that the player is using
+     * @param diagonal : The direction of the diagonal
+     * @return MINUS_INFINITY if the player has lost, PLUS_INFINITY if the player has won, or score in between
+     */
     public static int checkObstructionDiagonal(PIECE[][] slice, PIECE playerPiece, int diagonal)
     {
-        int hit = 0, notObstructed = 0;
+        int hit = 0; //counts the non-empty pieces in the line
+        int notObstructed = 0; //counts the empty and player pieces in the line
         
         //Left bottom to right top
         if(diagonal == 0)
@@ -330,12 +414,18 @@ public class Main {
             }
         }
         
-        if(hit == 4)    return PLUS_INFINITY;
-        if(hit == -4)   return MINUS_INFINITY;
-        if(notObstructed == 4) return hit + 1;
-        return 0;
+        if(hit == 4)    return PLUS_INFINITY; //Player has won in this line
+        if(hit == -4)   return MINUS_INFINITY; //Player has lost in this line
+        if(notObstructed == 4) return hit + 1; //Line is not obstructed by enemy
+        return 0; //Line is obstructed by the enemy
     }
-    
+
+    /**
+     * Cuts a slice from the given GameCube in orientation A
+     * @param gc : The GameCube to slice
+     * @param sliceDim : the number of the slice in that orientation
+     * @return A 4x4 array of pieces, sliced from the cube
+     */
     public static PIECE[][] sliceA(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
@@ -346,7 +436,13 @@ public class Main {
             }
         return slice;
     }
-    
+
+    /**
+     * Cuts a slice from the given GameCube in orientation B
+     * @param gc : The GameCube to slice
+     * @param sliceDim : the number of the slice in that orientation
+     * @return A 4x4 array of pieces, sliced from the cube
+     */
     public static PIECE[][] sliceB(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
@@ -357,7 +453,13 @@ public class Main {
             }
         return slice;
     }
-    
+
+    /**
+     * Cuts a slice from the given GameCube in orientation C
+     * @param gc : The GameCube to slice
+     * @param sliceDim : the number of the slice in that orientation
+     * @return A 4x4 array of pieces, sliced from the cube
+     */
     public static PIECE[][] sliceC(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
@@ -368,7 +470,13 @@ public class Main {
             }
         return slice;
     }
-    
+
+    /**
+     * Cuts a slice from the given GameCube in orientation D
+     * @param gc : The GameCube to slice
+     * @param sliceDim : the number of the slice in that orientation
+     * @return A 4x4 array of pieces, sliced from the cube
+     */
     public static PIECE[][] sliceD(GameCube gc, int sliceDim)
     {
         PIECE[][] slice = new PIECE[4][4];
@@ -394,49 +502,5 @@ public class Main {
             }
         }
         return slice;
-    }
-    
-    public static int checkObstruction(GameCube gc, int variableDimension, int column, int row, int height, PIECE player)
-    {
-        int     i = 0, hit = 0, notObstructed = 0;
-        PIECE   checkPiece = PIECE.EMPTY;
-        
-            //Check 
-            for(i = 0; i < 4; i++)
-            {
-                switch(variableDimension)
-                {
-                    case 0:
-                        checkPiece = gc.getPiece(i, row, height);
-                    break;
-                    case 1:
-                        checkPiece = gc.getPiece(column, i, height);
-                    break;
-                    case 2:
-                        checkPiece = gc.getPiece(column, row, i);
-                    break;
-                }
-                
-                if(checkPiece == player)
-                { 
-                    hit++;
-                    notObstructed++;
-                }
-                else if (checkPiece == PIECE.EMPTY)
-                {
-                    notObstructed++;
-                }
-                else
-                {
-                    hit--;
-                }
-            }
-            if(hit == 4)
-            {
-                return PLUS_INFINITY;
-            }
-            if(hit == -4)   return MINUS_INFINITY;
-            if(notObstructed == 4) return hit + 1;
-            return 0;
     }
 }
